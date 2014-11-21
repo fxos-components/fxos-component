@@ -1,6 +1,8 @@
 ;(function(define){define(function(require,exports,module){
 'use strict';
 
+var removeAttribute = HTMLElement.prototype.removeAttribute;
+var setAttribute = HTMLElement.prototype.setAttribute;
 var noop  = function() {};
 
 /**
@@ -10,19 +12,27 @@ var noop  = function() {};
  * @return {Boolean}
  */
 var hasShadowCSS = (function() {
-  try { document.querySelector(':host'); return true; }
+  var div = document.createElement('div');
+  try { div.querySelector(':host'); return true; }
   catch (e) { return false; }
 })();
 
 module.exports.register = function(name, props) {
+  injectGlobalCss(props.globalCss);
+  delete props.globalCSS;
+
   var proto = mixin(Object.create(base), props);
   var output = extractLightDomCSS(proto.template, name);
 
-  proto.template =  output.template;
-  proto.lightCSS =  output.lightCSS;
+  proto.template = output.template;
+  proto.lightCss = output.lightCss;
+
+  if (props.attrs) {
+    Object.defineProperties(proto, props.attrs);
+  }
 
   // Register and return the constructor
-  // and expose `protoype` (bug 1048339)
+  // and expose `protoytpe` (bug 1048339)
   var El = document.registerElement(name, { prototype: proto });
   El.prototype = proto;
   return El;
@@ -36,11 +46,12 @@ var base = mixin(Object.create(HTMLElement.prototype), {
   template: '',
 
   createdCallback: function() {
-    this.injectLightCSS(this);
+    this.injectLightCss(this);
     this.created();
   },
 
   attributeChangedCallback: function(name, from, to) {
+    if (this.attrs && this.attrs[name]) { this[name] = to; }
     this.attributeChanged(name, from, to);
   },
 
@@ -50,6 +61,36 @@ var base = mixin(Object.create(HTMLElement.prototype), {
 
   detachedCallback: function() {
     this.detached();
+  },
+
+  /**
+   * Sets an attribute internally
+   * and externally. This is so that
+   * we can style internal shadow-dom
+   * content.
+   *
+   * @param {String} name
+   * @param {String} value
+   */
+  setAttr: function(name, value) {
+    var internal = this.shadowRoot.firstElementChild;
+    setAttribute.call(internal, name, value);
+    setAttribute.call(this, name, value);
+  },
+
+  /**
+   * Removes an attribute internally
+   * and externally. This is so that
+   * we can style internal shadow-dom
+   * content.
+   *
+   * @param {String} name
+   * @param {String} value
+   */
+  removeAttr: function() {
+    var internal = this.shadowRoot.firstElementChild;
+    removeAttribute.call(internal, name, value);
+    removeAttribute.call(this, name, value);
   },
 
   /**
@@ -66,12 +107,12 @@ var base = mixin(Object.create(HTMLElement.prototype), {
    *
    * @private
    */
-  injectLightCSS: function(el) {
+  injectLightCss: function(el) {
     if (hasShadowCSS) { return; }
-    var style = document.createElement('style');
-    style.setAttribute('scoped', '');
-    style.innerHTML = el.lightCSS;
-    el.appendChild(style);
+    this.lightStyle = document.createElement('style');
+    this.lightStyle.setAttribute('scoped', '');
+    this.lightStyle.innerHTML = el.lightCss;
+    el.appendChild(this.lightStyle);
   }
 });
 
@@ -85,19 +126,26 @@ var base = mixin(Object.create(HTMLElement.prototype), {
  */
 function extractLightDomCSS(template, name) {
   var regex = /(?::host|::content)[^{]*\{[^}]*\}/g;
-  var lightCSS = '';
+  var lightCss = '';
 
   if (!hasShadowCSS) {
     template = template.replace(regex, function(match) {
-      lightCSS += match.replace(/::content|:host/g, name);
+      lightCss += match.replace(/::content|:host/g, name);
       return '';
     });
   }
 
   return {
     template: template,
-    lightCSS: lightCSS
+    lightCss: lightCss
   };
+}
+
+function injectGlobalCss(css) {
+  if (!css) return;
+  var style = document.createElement('style');
+  style.innerHTML = css;
+  document.head.appendChild(style);
 }
 
 function mixin(a, b) {
