@@ -16,14 +16,14 @@ var hasShadowCSS = (function() {
 
 module.exports.register = function(name, props) {
   var proto = mixin(Object.create(base), props);
-  var output = extractLightDomCSS(proto.template);
+  var output = extractLightDomCSS(proto.template, name);
 
   proto.template =  output.template;
   proto.lightCSS =  output.lightCSS;
 
   // Register and return the constructor
   // and expose `protoype` (bug 1048339)
-  var El = document.registerElement('gaia-header', { prototype: proto });
+  var El = document.registerElement(name, { prototype: proto });
   El.prototype = proto;
   return El;
 };
@@ -83,13 +83,13 @@ var base = mixin(Object.create(HTMLElement.prototype), {
  *
  * @return {String}
  */
-function extractLightDomCSS(template) {
+function extractLightDomCSS(template, name) {
   var regex = /(?::host|::content)[^{]*\{[^}]*\}/g;
   var lightCSS = '';
 
   if (!hasShadowCSS) {
     template = template.replace(regex, function(match) {
-      lightCSS += match.replace(/::content|:host/g, 'gaia-header');
+      lightCSS += match.replace(/::content|:host/g, name);
       return '';
     });
   }
