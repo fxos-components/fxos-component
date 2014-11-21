@@ -36,7 +36,6 @@ var base = mixin(Object.create(HTMLElement.prototype), {
   template: '',
 
   createdCallback: function() {
-    this.createShadowRoot().innerHTML = this.template;
     this.injectLightCSS(this);
     this.created();
   },
