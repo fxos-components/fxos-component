@@ -17,11 +17,19 @@ var hasShadowCSS = (function() {
   catch (e) { return false; }
 })();
 
+/**
+ * Register a new component.
+ *
+ * @param  {String} name
+ * @param  {Object} props
+ * @return {constructor}
+ * @public
+ */
 module.exports.register = function(name, props) {
   injectGlobalCss(props.globalCss);
   delete props.globalCSS;
 
-  var proto = mixin(Object.create(base), props);
+  var proto = Object.assign(Object.create(base), props);
   var output = extractLightDomCSS(proto.template, name);
 
   proto.template = output.template;
@@ -38,7 +46,7 @@ module.exports.register = function(name, props) {
   return El;
 };
 
-var base = mixin(Object.create(HTMLElement.prototype), {
+var base = Object.assign(Object.create(HTMLElement.prototype), {
   attributeChanged: noop,
   attached: noop,
   detached: noop,
@@ -50,18 +58,32 @@ var base = mixin(Object.create(HTMLElement.prototype), {
     this.created();
   },
 
+  /**
+   * It is very common to want to keep object
+   * properties in-sync with attributes,
+   * for example:
+   *
+   *   el.value = 'foo';
+   *   el.setAttribute('value', 'foo');
+   *
+   * So we support an object on the prototype
+   * named 'attrs' to provide a consistent
+   * way for component authors to define
+   * these properties. When an attribute
+   * changes we keep the attr[name]
+   * up-to-date.
+   *
+   * @param  {String} name
+   * @param  {String||null} from
+   * @param  {String||null} to
+   */
   attributeChangedCallback: function(name, from, to) {
     if (this.attrs && this.attrs[name]) { this[name] = to; }
     this.attributeChanged(name, from, to);
   },
 
-  attachedCallback: function() {
-    this.attached();
-  },
-
-  detachedCallback: function() {
-    this.detached();
-  },
+  attachedCallback: function() { this.attached(); },
+  detachedCallback: function() { this.detached(); },
 
   /**
    * Sets an attribute internally
@@ -141,16 +163,21 @@ function extractLightDomCSS(template, name) {
   };
 }
 
+/**
+ * Some CSS rules, such as @keyframes
+ * and @font-face don't work inside
+ * scoped or shadow <style>. So we
+ * have to put them into 'global'
+ * <style> in the head of the
+ * document.
+ *
+ * @param  {String} css
+ */
 function injectGlobalCss(css) {
   if (!css) return;
   var style = document.createElement('style');
   style.innerHTML = css;
   document.head.appendChild(style);
-}
-
-function mixin(a, b) {
-  for (var key in b) { a[key] = b[key]; }
-  return a;
 }
 
 });})(typeof define=='function'&&define.amd?define
