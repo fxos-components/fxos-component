@@ -42,7 +42,6 @@ module.exports.register = function(name, props) {
   // Register and return the constructor
   // and expose `protoytpe` (bug 1048339)
   var El = document.registerElement(name, { prototype: proto });
-  El.prototype = proto;
   return El;
 };
 
