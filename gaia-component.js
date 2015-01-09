@@ -1,6 +1,10 @@
 ;(function(define){define(function(require,exports,module){
 'use strict';
 
+/**
+ * Locals
+ */
+
 var textContent = Object.getOwnPropertyDescriptor(Node.prototype, 'textContent');
 var removeAttribute = HTMLElement.prototype.removeAttribute;
 var setAttribute = HTMLElement.prototype.setAttribute;
@@ -27,22 +31,41 @@ var hasShadowCSS = (function() {
  * @public
  */
 module.exports.register = function(name, props) {
+
+  // Inject global CSS into the document,
+  // and delete as no longer needed
   injectGlobalCss(props.globalCss);
-  delete props.globalCSS;
+  delete props.globalCss;
 
-  var proto = Object.assign(Object.create(base), props);
+  // Decide on a base protoype, create a handy
+  // reference to super (extended) class, then clean up.
+  var parent = props.extends ? props.extends.prototype : base;
+  props.super = parent;
+  delete props.extends;
+
+  // Merge base getter/setter attributes with the user's,
+  // then define the property descriptors on the prototype.
+  var descriptors = Object.assign(props.attrs || {}, baseAttrs);
+
+  // Store the orginal descriptors somewhere
+  // a little more private and delete the original
+  props._attrs = props.attrs;
+  delete props.attrs;
+
+  // Create the prototype, extended from the parent
+  var proto = Object.assign(Object.create(parent), props);
+
+  // Define the properties directly on the prototype
+  Object.defineProperties(proto, descriptors);
+
+  // Pull out CSS that needs to be in the light-dom
   var output = extractLightDomCSS(proto.template, name);
-  var _attrs = Object.assign(props.attrs || {}, attrs);
-
-  proto.template = output.template;
+  proto.template = document.createElement('template');
+  proto.template.innerHTML = output.template;
   proto.lightCss = output.lightCss;
 
-  Object.defineProperties(proto, _attrs);
-
-  // Register and return the constructor
-  // and expose `protoytpe` (bug 1048339)
-  var El = document.registerElement(name, { prototype: proto });
-  return El;
+  // Register the custom-element and return the constructor
+  return document.registerElement(name, { prototype: proto });
 };
 
 var base = Object.assign(Object.create(HTMLElement.prototype), {
@@ -77,12 +100,25 @@ var base = Object.assign(Object.create(HTMLElement.prototype), {
    * @param  {String||null} to
    */
   attributeChangedCallback: function(name, from, to) {
-    if (this.attrs && this.attrs[name]) { this[name] = to; }
+    var prop = toCamelCase(name);
+    if (this._attrs && this._attrs[prop]) { this[prop] = to; }
     this.attributeChanged(name, from, to);
   },
 
   attachedCallback: function() { this.attached(); },
   detachedCallback: function() { this.detached(); },
+
+  /**
+   * A convenient method for setting up
+   * a shadow-root using the defined template.
+   *
+   * @return {ShadowRoot}
+   */
+  setupShadowRoot: function() {
+    var node = document.importNode(this.template.content, true);
+    this.createShadowRoot().appendChild(node);
+    return this.shadowRoot;
+  },
 
   /**
    * Sets an attribute internally
@@ -108,10 +144,10 @@ var base = Object.assign(Object.create(HTMLElement.prototype), {
    * @param {String} name
    * @param {String} value
    */
-  removeAttr: function() {
+  removeAttr: function(name) {
     var internal = this.shadowRoot.firstElementChild;
-    removeAttribute.call(internal, name, value);
-    removeAttribute.call(this, name, value);
+    removeAttribute.call(internal, name);
+    removeAttribute.call(this, name);
   },
 
   /**
@@ -137,7 +173,7 @@ var base = Object.assign(Object.create(HTMLElement.prototype), {
   }
 });
 
-var attrs = {
+var baseAttrs = {
   textContent: {
     set: function(value) {
       var node = firstChildTextNode(this);
@@ -151,6 +187,12 @@ var attrs = {
   }
 };
 
+/**
+ * Return the first child textNode.
+ *
+ * @param  {Element} el
+ * @return {TextNode}
+ */
 function firstChildTextNode(el) {
   for (var i = 0; i < el.childNodes.length; i++) {
     var node = el.childNodes[i];
@@ -196,8 +238,25 @@ function extractLightDomCSS(template, name) {
 function injectGlobalCss(css) {
   if (!css) return;
   var style = document.createElement('style');
-  style.innerHTML = css;
+  style.innerHTML = css.trim();
   document.head.appendChild(style);
+}
+
+/**
+ * Convert hyphen separated
+ * string to camel-case.
+ *
+ * Example:
+ *
+ *   toCamelCase('foo-bar'); //=> 'fooBar'
+ *
+ * @param  {Sring} string
+ * @return {String}
+ */
+function toCamelCase(string) {
+  return string.replace(/-(.)/g, function replacer(string, p1) {
+    return p1.toUpperCase();
+  });
 }
 
 });})(typeof define=='function'&&define.amd?define
