@@ -8,7 +8,6 @@ suite('gaia-component', function() {
 
   setup(function() {
     this.sinon = sinon.sandbox.create();
-    this.sinon.spy(document.head, 'appendChild');
     this.Component = register();
   });
 
@@ -48,6 +47,44 @@ suite('gaia-component', function() {
     assert.isNull(matches, 'no shadow-css found');
   });
 
+  test('It rewrites shadow-css selectors correctly', function() {
+    var Element = component.register('host-style-test', {
+      template: `<style>
+          :host { display: block; }
+          :host([foo]) { color: red; }
+          ::content h1 { color: red; }
+        </style>
+      `
+    });
+
+    var el = new Element();
+    var lightCSS = el.querySelector('style').innerHTML;
+
+    assert.isTrue(!!~lightCSS.indexOf('host-style-test { display: block; }'));
+    assert.isTrue(!!~lightCSS.indexOf('host-style-test[foo] { color: red; }'));
+    assert.isTrue(!!~lightCSS.indexOf('host-style-test h1 { color: red; }'));
+  });
+
+  test('It extracts :host-context() selectors into globalCss and rewrites them', function() {
+    this.sinon.stub(document.head, 'appendChild');
+    var Element = component.register('host-context-test', {
+      template: `<style>
+          :host-context(.foo) ::content h1 { display: block; }
+          :host-context([dir=rtl]) { dir: rtl; }
+          :host(.foo) { color: red; }
+          ::content h1 { color: red; }
+        </style>
+      `
+    });
+
+    var el = new Element();
+    var lightCSS = el.querySelector('style').innerHTML;
+    var globalStyle = document.head.appendChild.args[0][0];
+
+    assert.equal(globalStyle.innerHTML, '.foo host-context-test h1 { display: block; }[dir=rtl] host-context-test { dir: rtl; }');
+    assert.equal(lightCSS, 'host-context-test.foo { color: red; }host-context-test h1 { color: red; }');
+  });
+
   test('It injects the shadow-css into the light-dom (shim)', function() {
     var component = new this.Component();
     var tagName = component.tagName.toLowerCase();
@@ -58,6 +95,12 @@ suite('gaia-component', function() {
   });
 
   test('It puts global-css in the <head>', function() {
+    this.sinon.stub(document.head, 'appendChild');
+
+    var Element = component.register('global-css-test', {
+      globalCss: '@keyframes my-animation {}'
+    });
+
     var style = document.head.appendChild.args[0][0];
     assert.equal(style.innerHTML, '@keyframes my-animation {}');
   });
@@ -127,10 +170,6 @@ suite('gaia-component', function() {
           ::host { display: block }
           ::content h1 { color: blue }
         </style>
-      `,
-
-      globalCss: `
-        @keyframes my-animation {}
       `,
 
       attrs: {
