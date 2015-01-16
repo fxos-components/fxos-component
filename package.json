@@ -2,7 +2,7 @@
   "name": "gaia-component",
   "homepage": "https://github.com/gaia-components/gaia-component",
   "license": "ISC",
-  "main": "script.js",
+  "main": "gaia-component.js",
   "directories": {
     "example": "examples",
     "test": "test"

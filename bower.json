@@ -4,6 +4,7 @@
   "authors": [
     "Wilson Page <wilsonpage@me.com>"
   ],
+  "main": "gaia-component.js",
   "license": "MIT",
   "ignore": [
     "**/.*",
