@@ -147,6 +147,32 @@ suite('gaia-component', function() {
     sinon.assert.called(proto.attributeChanged);
   });
 
+  suite('extends', function() {
+    test('it can extend from a native prototype', function() {
+      var El = component.register('test-extend-native', { extends: HTMLInputElement });
+      var el = new El();
+
+      assert.isTrue(el instanceof HTMLInputElement);
+    });
+
+    test('extending from a native prototype still includes base properties', function() {
+      var El = component.register('test-extend-base-props', { extends: HTMLInputElement });
+      assert.isDefined(El.prototype.createdCallback);
+    });
+
+    test('it can extend from existing GaiaComponent', function() {
+      var Parent = component.register('test-extends-parent', { foo: true });
+      var Child = component.register('test-extends-child', { extends: Parent });
+
+      assert.isTrue(Child.prototype.foo);
+    });
+
+    test('it defaults to HTMLElementPrototype', function() {
+      var el = new this.Component();
+      assert.ok(el instanceof HTMLElement);
+    });
+  });
+
   /**
    * Utils
    */

@@ -1,4 +1,5 @@
 ;(function(define){define(function(require,exports,module){
+/* jshint laxbreak:true*/
 'use strict';
 
 /**
@@ -30,12 +31,11 @@ var hasShadowCSS = (function() {
  * @return {constructor}
  * @public
  */
-module.exports.register = function(name, props) {
+exports.register = function(name, props) {
 
   // Decide on a base protoype, create a handy
   // reference to super (extended) class, then clean up.
-  var parent = props.extends ? props.extends.prototype : base;
-  props.super = parent;
+  var baseProto = getBaseProto(props.extends);
   delete props.extends;
 
   // Pull out CSS that needs to be in the light-dom
@@ -57,7 +57,7 @@ module.exports.register = function(name, props) {
 
   // Merge base getter/setter attributes with the user's,
   // then define the property descriptors on the prototype.
-  var descriptors = Object.assign(props.attrs || {}, baseAttrs);
+  var descriptors = Object.assign(props.attrs || {}, base.descriptors);
 
   // Store the orginal descriptors somewhere
   // a little more private and delete the original
@@ -65,7 +65,7 @@ module.exports.register = function(name, props) {
   delete props.attrs;
 
   // Create the prototype, extended from the parent
-  var proto = Object.assign(Object.create(parent), props);
+  var proto = Object.assign(Object.create(baseProto), props);
 
   // Define the properties directly on the prototype
   Object.defineProperties(proto, descriptors);
@@ -74,102 +74,119 @@ module.exports.register = function(name, props) {
   return document.registerElement(name, { prototype: proto });
 };
 
-var base = Object.assign(Object.create(HTMLElement.prototype), {
-  attributeChanged: noop,
-  attached: noop,
-  detached: noop,
-  created: noop,
+var base = {
+  properties: {
+    GaiaComponent: true,
+    attributeChanged: noop,
+    attached: noop,
+    detached: noop,
+    created: noop,
 
-  createdCallback: function() {
-    injectLightCss(this);
-    this.created();
-  },
-
-  /**
-   * It is very common to want to keep object
-   * properties in-sync with attributes,
-   * for example:
-   *
-   *   el.value = 'foo';
-   *   el.setAttribute('value', 'foo');
-   *
-   * So we support an object on the prototype
-   * named 'attrs' to provide a consistent
-   * way for component authors to define
-   * these properties. When an attribute
-   * changes we keep the attr[name]
-   * up-to-date.
-   *
-   * @param  {String} name
-   * @param  {String||null} from
-   * @param  {String||null} to
-   */
-  attributeChangedCallback: function(name, from, to) {
-    var prop = toCamelCase(name);
-    if (this._attrs && this._attrs[prop]) { this[prop] = to; }
-    this.attributeChanged(name, from, to);
-  },
-
-  attachedCallback: function() { this.attached(); },
-  detachedCallback: function() { this.detached(); },
-
-  /**
-   * A convenient method for setting up
-   * a shadow-root using the defined template.
-   *
-   * @return {ShadowRoot}
-   */
-  setupShadowRoot: function() {
-    if (!this.template) { return; }
-    var node = document.importNode(this.template.content, true);
-    this.createShadowRoot().appendChild(node);
-    return this.shadowRoot;
-  },
-
-  /**
-   * Sets an attribute internally
-   * and externally. This is so that
-   * we can style internal shadow-dom
-   * content.
-   *
-   * @param {String} name
-   * @param {String} value
-   */
-  setAttr: function(name, value) {
-    var internal = this.shadowRoot.firstElementChild;
-    setAttribute.call(internal, name, value);
-    setAttribute.call(this, name, value);
-  },
-
-  /**
-   * Removes an attribute internally
-   * and externally. This is so that
-   * we can style internal shadow-dom
-   * content.
-   *
-   * @param {String} name
-   * @param {String} value
-   */
-  removeAttr: function(name) {
-    var internal = this.shadowRoot.firstElementChild;
-    removeAttribute.call(internal, name);
-    removeAttribute.call(this, name);
-  }
-});
-
-var baseAttrs = {
-  textContent: {
-    set: function(value) {
-      var node = firstChildTextNode(this);
-      if (node) { node.nodeValue = value; }
+    createdCallback: function() {
+      injectLightCss(this);
+      this.created();
     },
 
-    get: function() {
-      var node = firstChildTextNode(this);
-      return node && node.nodeValue;
+    /**
+     * It is very common to want to keep object
+     * properties in-sync with attributes,
+     * for example:
+     *
+     *   el.value = 'foo';
+     *   el.setAttribute('value', 'foo');
+     *
+     * So we support an object on the prototype
+     * named 'attrs' to provide a consistent
+     * way for component authors to define
+     * these properties. When an attribute
+     * changes we keep the attr[name]
+     * up-to-date.
+     *
+     * @param  {String} name
+     * @param  {String||null} from
+     * @param  {String||null} to
+     */
+    attributeChangedCallback: function(name, from, to) {
+      var prop = toCamelCase(name);
+      if (this._attrs && this._attrs[prop]) { this[prop] = to; }
+      this.attributeChanged(name, from, to);
+    },
+
+    attachedCallback: function() { this.attached(); },
+    detachedCallback: function() { this.detached(); },
+
+    /**
+     * A convenient method for setting up
+     * a shadow-root using the defined template.
+     *
+     * @return {ShadowRoot}
+     */
+    setupShadowRoot: function() {
+      if (!this.template) { return; }
+      var node = document.importNode(this.template.content, true);
+      this.createShadowRoot().appendChild(node);
+      return this.shadowRoot;
+    },
+
+    /**
+     * Sets an attribute internally
+     * and externally. This is so that
+     * we can style internal shadow-dom
+     * content.
+     *
+     * @param {String} name
+     * @param {String} value
+     */
+    setAttr: function(name, value) {
+      var internal = this.shadowRoot.firstElementChild;
+      setAttribute.call(internal, name, value);
+      setAttribute.call(this, name, value);
+    },
+
+    /**
+     * Removes an attribute internally
+     * and externally. This is so that
+     * we can style internal shadow-dom
+     * content.
+     *
+     * @param {String} name
+     * @param {String} value
+     */
+    removeAttr: function(name) {
+      var internal = this.shadowRoot.firstElementChild;
+      removeAttribute.call(internal, name);
+      removeAttribute.call(this, name);
+    }
+  },
+
+  descriptors: {
+    textContent: {
+      set: function(value) {
+        var node = firstChildTextNode(this);
+        if (node) { node.nodeValue = value; }
+      },
+
+      get: function() {
+        var node = firstChildTextNode(this);
+        return node && node.nodeValue;
+      }
     }
   }
 };
+
+var defaultPrototype = createProto(HTMLElement.prototype);
+
+function getBaseProto(proto) {
+  if (!proto) { return defaultPrototype; }
+  proto = proto.prototype || proto;
+  return !proto.GaiaComponent
+    ? createProto(proto)
+    : proto;
+}
+
+function createProto(proto) {
+  return Object.assign(Object.create(proto), base.properties);
+}
 
 /**
  * Return the first child textNode.
@@ -247,7 +264,6 @@ function injectGlobalCss(css) {
   style.innerHTML = css.trim();
   document.head.appendChild(style);
 }
-
 
 /**
  * The Gecko platform doesn't yet have
