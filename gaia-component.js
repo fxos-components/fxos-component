@@ -11,18 +11,6 @@ var setAttribute = HTMLElement.prototype.setAttribute;
 var noop  = function() {};
 
 /**
- * Detects presence of shadow-dom
- * CSS selectors.
- *
- * @return {Boolean}
- */
-var hasShadowCSS = (function() {
-  var div = document.createElement('div');
-  try { div.querySelector(':host'); return true; }
-  catch (e) { return false; }
-})();
-
-/**
  * Register a new component.
  *
  * @param  {String} name
@@ -31,10 +19,9 @@ var hasShadowCSS = (function() {
  * @public
  */
 exports.register = function(name, props) {
-
-  // Decide on a base protoype, create a handy
-  // reference to super (extended) class, then clean up.
   var baseProto = getBaseProto(props.extends);
+
+  // Clean up
   delete props.extends;
 
   // Pull out CSS that needs to be in the light-dom
@@ -63,10 +50,9 @@ exports.register = function(name, props) {
   props._attrs = props.attrs;
   delete props.attrs;
 
-  // Create the prototype, extended from the parent
-  var proto = Object.assign(Object.create(baseProto), props);
-
-  // Define the properties directly on the prototype
+  // Create the prototype, extended from base and
+  // define the descriptors directly on the prototype
+  var proto = createProto(baseProto, props);
   Object.defineProperties(proto, descriptors);
 
   // Register the custom-element and return the constructor
@@ -173,18 +159,40 @@ var base = {
   }
 };
 
-var defaultPrototype = createProto(HTMLElement.prototype);
+/**
+ * The default base prototype to use
+ * when `extends` is undefined.
+ *
+ * @type {Object}
+ */
+var defaultPrototype = createProto(HTMLElement.prototype, base.properties);
 
+/**
+ * Returns a suitable prototype based
+ * on the object passed.
+ *
+ * @param  {HTMLElementPrototype|undefined} proto
+ * @return {HTMLElementPrototype}
+ * @private
+ */
 function getBaseProto(proto) {
   if (!proto) { return defaultPrototype; }
   proto = proto.prototype || proto;
   return !proto.GaiaComponent
-    ? createProto(proto)
+    ? createProto(proto, base.properties)
     : proto;
 }
 
-function createProto(proto) {
-  return Object.assign(Object.create(proto), base.properties);
+/**
+ * Extends the given proto and mixes
+ * in the given properties.
+ *
+ * @param  {Object} proto
+ * @param  {Object} props
+ * @return {Object}
+ */
+function createProto(proto, props) {
+  return Object.assign(Object.create(proto), props);
 }
 
 /**
@@ -200,6 +208,23 @@ function firstChildTextNode(el) {
   }
 }
 
+/**
+ * Detects presence of shadow-dom
+ * CSS selectors.
+ *
+ * @return {Boolean}
+ */
+var hasShadowCSS = (function() {
+  var div = document.createElement('div');
+  try { div.querySelector(':host'); return true; }
+  catch (e) { return false; }
+})();
+
+/**
+ * Regexs used to extract shadow-css
+ *
+ * @type {Object}
+ */
 var regex = {
   shadowCss: /(?:\:host|\:\:content)[^{]*\{[^}]*\}/g,
   ':host': /(?:\:host)/g,
