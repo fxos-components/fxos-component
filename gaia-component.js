@@ -228,7 +228,7 @@ var hasShadowCSS = (function() {
 var regex = {
   shadowCss: /(?:\:host|\:\:content)[^{]*\{[^}]*\}/g,
   ':host': /(?:\:host)/g,
-  ':host()': /\:host\((.+)\)/g,
+  ':host()': /\:host\((.+)\)(?: \:\:content)?/g,
   ':host-context': /\:host-context\((.+)\)([^{,]+)?/g,
   '::content': /(?:\:\:content)/g
 };

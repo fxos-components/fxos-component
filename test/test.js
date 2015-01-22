@@ -52,6 +52,7 @@ suite('gaia-component', function() {
       template: `<style>
           :host { display: block; }
           :host([foo]) { color: red; }
+          :host([foo]) ::content .bar { color: red; }
           ::content h1 { color: red; }
         </style>
       `
@@ -62,6 +63,7 @@ suite('gaia-component', function() {
 
     assert.isTrue(!!~lightCSS.indexOf('host-style-test { display: block; }'));
     assert.isTrue(!!~lightCSS.indexOf('host-style-test[foo] { color: red; }'));
+    assert.isTrue(!!~lightCSS.indexOf('host-style-test[foo] .bar { color: red; }'));
     assert.isTrue(!!~lightCSS.indexOf('host-style-test h1 { color: red; }'));
   });
 
