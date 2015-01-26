@@ -175,6 +175,34 @@ suite('gaia-component', function() {
     });
   });
 
+  suite('rtl', function() {
+    setup(function() {
+      this.dir = document.dir;
+    });
+
+    teardown(function() {
+      document.dir = this.dir;
+    });
+
+    test('component can listen for rtl changes', function(done) {
+      var El = component.register('rtl-test', {
+        rtl: true,
+
+        created: function() {
+          document.addEventListener('dirchanged', () => this.dirChanged());
+        },
+
+        dirChanged: function() {
+          assert.equal(document.dir, 'rtl');
+          done();
+        }
+      });
+
+      var el = new El();
+      document.dir = 'rtl';
+    });
+  });
+
   /**
    * Utils
    */

@@ -68,6 +68,7 @@ var base = {
     created: noop,
 
     createdCallback: function() {
+      if (this.rtl) { addDirObserver(); }
       injectLightCss(this);
       this.created();
     },
@@ -326,6 +327,37 @@ function toCamelCase(string) {
   return string.replace(/-(.)/g, function replacer(string, p1) {
     return p1.toUpperCase();
   });
+}
+
+/**
+ * Observer (singleton)
+ *
+ * @type {MutationObserver|undefined}
+ */
+var dirObserver;
+
+/**
+ * Observes the document `dir` (direction)
+ * attribute and dispatches a global event
+ * when it changes.
+ *
+ * Components can listen to this event and
+ * make internal changes if need be.
+ *
+ * @private
+ */
+function addDirObserver() {
+  if (dirObserver) { return; }
+
+  dirObserver = new MutationObserver(onChanged);
+  dirObserver.observe(document.documentElement, {
+    attributeFilter: ['dir'],
+    attributes: true
+  });
+
+  function onChanged(mutations) {
+    document.dispatchEvent(new Event('dirchanged'));
+  }
 }
 
 });})(typeof define=='function'&&define.amd?define
