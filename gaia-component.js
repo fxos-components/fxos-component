@@ -53,6 +53,8 @@ exports.register = function(name, props) {
   // Create the prototype, extended from base and
   // define the descriptors directly on the prototype
   var proto = createProto(baseProto, props);
+  proto._getInnerHTML = proto.__lookupGetter__('innerHTML');
+  proto._setInnerHTML = proto.__lookupSetter__('innerHTML');
   Object.defineProperties(proto, descriptors);
 
   // Register the custom-element and return the constructor
@@ -155,6 +157,17 @@ var base = {
       get: function() {
         var node = firstChildTextNode(this);
         return node && node.nodeValue;
+      }
+    },
+
+    innerHTML: {
+      set: function(value) {
+        this._setInnerHTML(value);
+        this.appendChild(this.lightStyle);
+      },
+
+      get: function() {
+        return this._getInnerHTML();
       }
     }
   }
