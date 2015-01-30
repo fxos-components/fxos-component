@@ -111,11 +111,18 @@ suite('gaia-component', function() {
     assert.isUndefined(this.Component.prototype.globalCss);
   });
 
-  test('setting textContent doesnt remove light-dom css', function() {
+  test('setting textContent doesn\'t remove light-dom CSS', function() {
     var component = new this.Component();
     component.textContent = 'foo';
     var style = component.querySelector('style');
-    assert.isDefined(style);
+    assert.ok(style);
+  });
+
+  test('setting innerHTML doesn\'t remove light-dom CSS', function() {
+    var component = new this.Component();
+    component.innerHTML = 'foo';
+    var style = component.querySelector('style');
+    assert.ok(style);
   });
 
   test('removeAttr() and setAttr() also set attrs on first shadow-dom child', function() {

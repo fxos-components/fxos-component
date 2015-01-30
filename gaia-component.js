@@ -6,8 +6,9 @@
  */
 
 var textContent = Object.getOwnPropertyDescriptor(Node.prototype, 'textContent');
-var removeAttribute = HTMLElement.prototype.removeAttribute;
-var setAttribute = HTMLElement.prototype.setAttribute;
+var innerHTML = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
+var removeAttribute = Element.prototype.removeAttribute;
+var setAttribute = Element.prototype.setAttribute;
 var noop  = function() {};
 
 /**
@@ -53,8 +54,6 @@ exports.register = function(name, props) {
   // Create the prototype, extended from base and
   // define the descriptors directly on the prototype
   var proto = createProto(baseProto, props);
-  proto._getInnerHTML = proto.__lookupGetter__('innerHTML');
-  proto._setInnerHTML = proto.__lookupSetter__('innerHTML');
   Object.defineProperties(proto, descriptors);
 
   // Register the custom-element and return the constructor
@@ -150,25 +149,20 @@ var base = {
   descriptors: {
     textContent: {
       set: function(value) {
-        var node = firstChildTextNode(this);
-        if (node) { node.nodeValue = value; }
+        textContent.set.call(this, value);
+        if (this.lightStyle) { this.appendChild(this.lightStyle); }
       },
 
-      get: function() {
-        var node = firstChildTextNode(this);
-        return node && node.nodeValue;
-      }
+      get: textContent.get
     },
 
     innerHTML: {
       set: function(value) {
-        this._setInnerHTML(value);
-        this.appendChild(this.lightStyle);
+        innerHTML.set.call(this, value);
+        if (this.lightStyle) { this.appendChild(this.lightStyle); }
       },
 
-      get: function() {
-        return this._getInnerHTML();
-      }
+      get: innerHTML.get
     }
   }
 };
@@ -207,19 +201,6 @@ function getBaseProto(proto) {
  */
 function createProto(proto, props) {
   return Object.assign(Object.create(proto), props);
-}
-
-/**
- * Return the first child textNode.
- *
- * @param  {Element} el
- * @return {TextNode}
- */
-function firstChildTextNode(el) {
-  for (var i = 0; i < el.childNodes.length; i++) {
-    var node = el.childNodes[i];
-    if (node && node.nodeType === 3) { return node; }
-  }
 }
 
 /**
