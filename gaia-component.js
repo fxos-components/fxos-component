@@ -281,7 +281,13 @@ function injectGlobalCss(css) {
   if (!css) return;
   var style = document.createElement('style');
   style.innerHTML = css.trim();
-  document.head.appendChild(style);
+  if (document.head) {
+    document.head.appendChild(style);
+  } else {
+    window.addEventListener('load', () => {
+      document.head.appendChild(style);
+    });
+  }
 }
 
 /**
