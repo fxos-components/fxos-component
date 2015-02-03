@@ -281,14 +281,27 @@ function injectGlobalCss(css) {
   if (!css) return;
   var style = document.createElement('style');
   style.innerHTML = css.trim();
-  if (document.head) {
-    document.head.appendChild(style);
-  } else {
-    window.addEventListener('load', () => {
-      document.head.appendChild(style);
-    });
-  }
+  headReady().then(() => {
+    document.head.appendChild(style)
+  });
 }
+
+
+/**
+ * Resolves a promise once document.head is ready.
+ *
+ * @private
+ */
+function headReady() {
+  return new Promise(resolve => {
+    if (document.head) { return resolve(); }
+    window.addEventlistener('load', function fn() {
+      window.removeEventlistener('load', fn);
+      resolve();
+    });
+  });
+}
+
 
 /**
  * The Gecko platform doesn't yet have

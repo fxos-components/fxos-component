@@ -67,7 +67,7 @@ suite('gaia-component', function() {
     assert.isTrue(!!~lightCSS.indexOf('host-style-test h1 { color: red; }'));
   });
 
-  test('It extracts :host-context() selectors into globalCss and rewrites them', function() {
+  test('It extracts :host-context() selectors into globalCss and rewrites them', function(done) {
     this.sinon.stub(document.head, 'appendChild');
     var Element = component.register('host-context-test', {
       template: `<style>
@@ -80,11 +80,14 @@ suite('gaia-component', function() {
     });
 
     var el = new Element();
-    var lightCSS = el.querySelector('style').innerHTML;
-    var globalStyle = document.head.appendChild.args[0][0];
+    setTimeout(function() {
+      var lightCSS = el.querySelector('style').innerHTML;
+      var globalStyle = document.head.appendChild.args[0][0];
 
-    assert.equal(globalStyle.innerHTML, '.foo host-context-test h1 { display: block; }[dir=rtl] host-context-test { dir: rtl; }');
-    assert.equal(lightCSS, 'host-context-test.foo { color: red; }host-context-test h1 { color: red; }');
+      assert.equal(globalStyle.innerHTML, '.foo host-context-test h1 { display: block; }[dir=rtl] host-context-test { dir: rtl; }');
+      assert.equal(lightCSS, 'host-context-test.foo { color: red; }host-context-test h1 { color: red; }');
+      done();
+    })
   });
 
   test('It injects the shadow-css into the light-dom (shim)', function() {
@@ -96,15 +99,18 @@ suite('gaia-component', function() {
     assert.equal(lightCSS, expected);
   });
 
-  test('It puts global-css in the <head>', function() {
+  test('It puts global-css in the <head>', function(done) {
     this.sinon.stub(document.head, 'appendChild');
 
     var Element = component.register('global-css-test', {
       globalCss: '@keyframes my-animation {}'
     });
 
-    var style = document.head.appendChild.args[0][0];
-    assert.equal(style.innerHTML, '@keyframes my-animation {}');
+    setTimeout(function() {
+      var style = document.head.appendChild.args[0][0];
+      assert.equal(style.innerHTML, '@keyframes my-animation {}');
+      done();
+    });
   });
 
   test('It doesnt putt `globalCss` on the prototype', function() {
