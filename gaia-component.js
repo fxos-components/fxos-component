@@ -57,7 +57,13 @@ exports.register = function(name, props) {
   Object.defineProperties(proto, descriptors);
 
   // Register the custom-element and return the constructor
-  return document.registerElement(name, { prototype: proto });
+  try {
+    return document.registerElement(name, { prototype: proto });
+  } catch (e) {
+    if (e.name !== 'NotSupportedError') {
+      throw e;
+    }
+  }
 };
 
 var base = {
