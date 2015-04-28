@@ -16,10 +16,12 @@ suite('gaia-component', function() {
   });
 
   test('It turns the template string into a <template> element', function() {
-    assert.isTrue(this.Component.prototype.template instanceof HTMLTemplateElement);
+    assert.isTrue(this.Component.prototype.template instanceof
+      HTMLTemplateElement);
   });
 
-  test('It defines attrs decriptors to enable get/set functionality', function() {
+  test('It defines attrs decriptors to enable get/set functionality',
+    function() {
     var component = new this.Component();
 
     assert.isTrue('value' in component);
@@ -29,7 +31,8 @@ suite('gaia-component', function() {
     assert.equal(component.value, 'foo_stored');
   });
 
-  test('It calls attrs setter when matching attribute changes', function() {
+  test('It calls attrs setter when matching attribute changes',
+    function() {
     var component = new this.Component();
 
     component.setAttribute('value', 'foo');
@@ -63,11 +66,13 @@ suite('gaia-component', function() {
 
     assert.isTrue(!!~lightCSS.indexOf('host-style-test { display: block; }'));
     assert.isTrue(!!~lightCSS.indexOf('host-style-test[foo] { color: red; }'));
-    assert.isTrue(!!~lightCSS.indexOf('host-style-test[foo] .bar { color: red; }'));
+    assert.isTrue(!!~lightCSS
+      .indexOf('host-style-test[foo] .bar { color: red; }'));
     assert.isTrue(!!~lightCSS.indexOf('host-style-test h1 { color: red; }'));
   });
 
-  test('It extracts :host-context() selectors into globalCss and rewrites them', function(done) {
+  test('It extracts :host-context() selectors into globalCss and rewrites them',
+    function(done) {
     this.sinon.stub(document.head, 'appendChild');
     var Element = component.register('host-context-test', {
       template: `<style>
@@ -84,10 +89,14 @@ suite('gaia-component', function() {
       var lightCSS = el.querySelector('style').innerHTML;
       var globalStyle = document.head.appendChild.args[0][0];
 
-      assert.equal(globalStyle.innerHTML, '.foo host-context-test h1 { display: block; }[dir=rtl] host-context-test { dir: rtl; }');
-      assert.equal(lightCSS, 'host-context-test.foo { color: red; }host-context-test h1 { color: red; }');
+      assert.equal(globalStyle.innerHTML,
+        '.foo host-context-test h1 { display: block; }' +
+        '[dir=rtl] host-context-test { dir: rtl; }');
+      assert.equal(lightCSS,
+        'host-context-test.foo { color: red; }' +
+        'host-context-test h1 { color: red; }');
       done();
-    })
+    });
   });
 
   test('It injects the shadow-css into the light-dom (shim)', function() {
@@ -102,7 +111,7 @@ suite('gaia-component', function() {
   test('It puts global-css in the <head>', function(done) {
     this.sinon.stub(document.head, 'appendChild');
 
-    var Element = component.register('global-css-test', {
+    component.register('global-css-test', {
       globalCss: '@keyframes my-animation {}'
     });
 
@@ -131,7 +140,8 @@ suite('gaia-component', function() {
     assert.ok(style);
   });
 
-  test('removeAttr() and setAttr() also set attrs on first shadow-dom child', function() {
+  test('removeAttr() and setAttr() also set attrs on first shadow-dom child',
+    function() {
     var component = new this.Component();
     var inner = component.shadowRoot.firstElementChild;
 
@@ -164,14 +174,17 @@ suite('gaia-component', function() {
 
   suite('extends', function() {
     test('it can extend from a native prototype', function() {
-      var El = component.register('test-extend-native', { extends: HTMLInputElement });
+      var El = component.register('test-extend-native',
+        {extends: HTMLInputElement});
       var el = new El();
 
       assert.isTrue(el instanceof HTMLInputElement);
     });
 
-    test('extending from a native prototype still includes base properties', function() {
-      var El = component.register('test-extend-base-props', { extends: HTMLInputElement });
+    test('extending from a native prototype still includes base properties',
+      function() {
+      var El = component.register('test-extend-base-props',
+        {extends: HTMLInputElement});
       assert.isDefined(El.prototype.createdCallback);
     });
 
@@ -211,7 +224,7 @@ suite('gaia-component', function() {
         }
       });
 
-      var el = new El();
+      El();
       document.dir = 'rtl';
     });
   });
