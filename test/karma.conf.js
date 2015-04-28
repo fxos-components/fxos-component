@@ -12,7 +12,7 @@ module.exports = function(config) {
     customLaunchers: {
       firefox_latest: {
         base: 'FirefoxNightly',
-        prefs: { 'dom.webcomponents.enabled': true }
+        prefs: {'dom.webcomponents.enabled': true}
       }
     },
 
