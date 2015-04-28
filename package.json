@@ -1,7 +1,7 @@
 {
   "name": "gaia-component",
   "homepage": "https://github.com/gaia-components/gaia-component",
-  "version": "0.3.4",
+  "version": "0.3.6",
   "main": "gaia-component.js",
   "directories": {
     "example": "examples",
