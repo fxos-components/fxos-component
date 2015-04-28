@@ -45,7 +45,7 @@ exports.register = function(name, props) {
 
   // Merge base getter/setter attributes with the user's,
   // then define the property descriptors on the prototype.
-  var descriptors = Object.assign(props.attrs || {}, base.descriptors);
+  var descriptors = mixin(props.attrs || {}, base.descriptors);
 
   // Store the orginal descriptors somewhere
   // a little more private and delete the original
@@ -208,7 +208,7 @@ function getBaseProto(proto) {
  * @return {Object}
  */
 function createProto(proto, props) {
-  return Object.assign(Object.create(proto), props);
+  return mixin(Object.create(proto), props);
 }
 
 /**
@@ -379,6 +379,20 @@ function addDirObserver() {
   function onChanged(mutations) {
     document.dispatchEvent(new Event('dirchanged'));
   }
+}
+
+/**
+ * Copy the values of all properties from
+ * source object `target` to a target object `source`.
+ * It will return the target object.
+ *
+ * @param   {Object} target
+ * @param   {Object} source
+ * @returns {Object}
+ */
+function mixin(target, source) {
+  for (var key in source) target[key] = source[key];
+  return target;
 }
 
 });})(typeof define=='function'&&define.amd?define
