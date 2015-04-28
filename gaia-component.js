@@ -4,7 +4,6 @@
 /**
  * Locals
  */
-
 var textContent = Object.getOwnPropertyDescriptor(Node.prototype,
     'textContent');
 var innerHTML = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
@@ -391,7 +390,9 @@ function addDirObserver() {
  * @returns {Object}
  */
 function mixin(target, source) {
-  for (var key in source) target[key] = source[key];
+  for (var key in source) {
+    target[key] = source[key];
+  }
   return target;
 }
 
