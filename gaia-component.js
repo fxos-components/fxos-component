@@ -391,7 +391,9 @@ function addDirObserver() {
  * @returns {Object}
  */
 function mixin(target, source) {
-  for (var key in source) target[key] = source[key];
+  for (var key in source) {
+    target[key] = source[key];
+  }
   return target;
 }
 
