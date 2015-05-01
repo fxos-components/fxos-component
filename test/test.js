@@ -215,7 +215,9 @@ suite('gaia-component', function() {
         rtl: true,
 
         created: function() {
-          document.addEventListener('dirchanged', () => this.dirChanged());
+          document.addEventListener('dirchanged', function() {
+            this.dirChanged();
+          }.bind(this));
         },
 
         dirChanged: function() {

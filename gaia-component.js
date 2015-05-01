@@ -4,7 +4,6 @@
 /**
  * Locals
  */
-
 var textContent = Object.getOwnPropertyDescriptor(Node.prototype,
     'textContent');
 var innerHTML = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');

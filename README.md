@@ -8,10 +8,6 @@ A wrapper around `document.registerElement()` to define a custom-element with wo
 $ bower install gaia-components/gaia-component
 ```
 
-## Examples
-
-- [Example](http://gaia-components.github.io/gaia-component/)
-
 ## Usage
 
 ```js
