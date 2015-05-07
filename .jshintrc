@@ -5,6 +5,7 @@
   "latedef": "nofunc",
   "newcap": false,
   "noarg": true,
+  "node": true,
   "nonew": true,
   "quotmark": "single",
   "undef": true,

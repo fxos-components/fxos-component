@@ -12,6 +12,9 @@ $ bower install gaia-components/gaia-component
 
 ```js
 var MyComponent = component.register('my-component', {
+  // extend component from the given prototype
+  extends: HTMLButtonElement.prototype,
+
   created: function() {
 
     // Creates a shadow-root and
@@ -64,3 +67,9 @@ myComponent.customAttr; //=> 'foo';
 If your would like tests to run on file change use:
 
 `$ npm run test-dev`
+
+## Lint check
+
+Run lint check with command:
+
+`$ npm run lint`
