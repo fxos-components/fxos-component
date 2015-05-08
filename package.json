@@ -1,7 +1,7 @@
 {
   "name": "gaia-component",
   "homepage": "https://github.com/gaia-components/gaia-component",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "main": "gaia-component.js",
   "directories": {
     "example": "examples",
@@ -9,9 +9,9 @@
   },
   "devDependencies": {
     "bower": "^1.4.1",
-    "browserify": "^9.0.8",
+    "browserify": "^10.1.0",
     "jshint": "^2.7.0",
-    "karma": "^0.12.31",
+    "karma": "^0.12.32",
     "karma-firefox-launcher": "^0.1.4",
     "karma-mocha": "^0.1.10",
     "karma-sinon-chai": "^0.3.0",

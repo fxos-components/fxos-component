@@ -1,6 +1,4 @@
-/*global window,assert,suite,setup,teardown,sinon,test*/
-/*jshint esnext:true*/
-
+/*global sinon, assert, suite, setup, teardown, test */
 suite('gaia-component', function() {
   'use strict';
 
