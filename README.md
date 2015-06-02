@@ -77,7 +77,18 @@ var YourComponent = component.register('your-component', {
 ```
 
 If the property ```extensible: false``` is set the registered component
-cannot be extended. Extensible components store a copy of the template string and setting 
+cannot be extended:
+
+```js
+var MyComponent = component.register('my-component', {
+  // extend component from the given prototype
+  extends: HTMLButtonElement.prototype,
+  extensible: false,
+  ...
+});
+```
+
+Extensible components store a copy of the template string and setting 
 the flag to false will prevent storing that string. This is an optimization
 for production systems and large component hierarchies. All component are extensible
 by default.
