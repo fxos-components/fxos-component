@@ -73,7 +73,8 @@ var YourComponent = component.register('your-component', {
   // extend component from the given prototype
   extends: MyComponent.prototype,
   ...
-});```
+});
+```
 
 If the property ```extensible: false``` is set the registered component
 cannot be extended. Extensible components store a copy of the template string and setting 
