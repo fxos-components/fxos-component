@@ -88,10 +88,12 @@ var MyComponent = component.register('my-component', {
 });
 ```
 
-Extensible components store a copy of the template string and setting 
-the flag to false will prevent storing that string. This is an optimization
-for production systems and large component hierarchies. All component are extensible
-by default.
+Extensible components come with a little bit of overhead. For instance, 
+they store a copy of the template string that derived components
+will use to properly inherit the styles. With the extensible flag set to false 
+components won't store the template string and some memory will be saved. 
+This is an optimization for production systems and large component hierarchies. 
+Registed components are extensible by default.
 
 ## Tests
 
