@@ -58,6 +58,43 @@ myComponent.setAttribute('custom-attr', 'foo');
 myComponent.customAttr; //=> 'foo';
 ```
 
+### Component Extension
+
+Components can extend other components:
+
+```js
+var MyComponent = component.register('my-component', {
+  // extend component from the given prototype
+  extends: HTMLButtonElement.prototype,
+  ...
+});
+
+var YourComponent = component.register('your-component', {
+  // extend component from the given prototype
+  extends: MyComponent.prototype,
+  ...
+});
+```
+
+If the property ```extensible: false``` is set the registered component
+cannot be extended:
+
+```js
+var MyComponent = component.register('my-component', {
+  // extend component from the given prototype
+  extends: HTMLButtonElement.prototype,
+  extensible: false,
+  ...
+});
+```
+
+Extensible components come with a little bit of overhead. For instance, 
+they store a copy of the template string that derived components
+will use to properly inherit the styles. With the extensible flag set to false 
+components won't store the template string and some memory will be saved. 
+This is an optimization for production systems and large component hierarchies. 
+Registed components are extensible by default.
+
 ## Tests
 
 1. Ensure Firefox Nightly is installed on your machine.
