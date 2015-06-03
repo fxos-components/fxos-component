@@ -206,7 +206,8 @@ suite('gaia-component', function() {
       assert.ok(El.prototype.templateString);
     });
 
-    test('it does not store the template string if the component is declared as non extensible', function() {
+    test('it does not store the template string if the' +
+         'component is declared as non extensible', function() {
       var El = component.register('test-extends-non-extensible', {
         extends: HTMLInputElement,
         extensible: false,
@@ -215,7 +216,7 @@ suite('gaia-component', function() {
       assert.isUndefined(El.prototype.templateString);
     });
 
-    test('it does not store the template string if the component is declared as non extensible', function() {
+    test('a child inherits parent style template', function() {
       var Parent = component.register('test-extensible-parent', {
         extends: HTMLInputElement,
         template: `
@@ -223,10 +224,13 @@ suite('gaia-component', function() {
           <style>::host { display: block; background-color: pink; } </style>
         `
       });
-      var Child = component.register('test-extensible-child', { extends: Parent.prototype });
+      var Child = component.register('test-extensible-child', {
+        extends: Parent.prototype
+      });
       var el = new Child();
       var lightCSS = el.querySelector('style').innerHTML;
-      assert.isTrue(!!~lightCSS.indexOf('test-extensible-child { display: block; background-color: pink; }'));
+      assert.isTrue(!!~lightCSS.indexOf(
+        'test-extensible-child { display: block; background-color: pink; }'));
     });
 
   });
