@@ -106,6 +106,14 @@ suite('gaia-component', function() {
     assert.equal(lightCSS, expected);
   });
 
+  test('it does not inject a <style> if one is already present', function() {
+    var component = new this.Component();
+    var cloned = component.cloneNode(true);
+    var stylesheets = cloned.querySelectorAll('style');
+
+    assert.equal(stylesheets.length, 1);
+  });
+
   test('It puts global-css in the <head>', function(done) {
     this.sinon.stub(document.head, 'appendChild');
 
@@ -232,7 +240,6 @@ suite('gaia-component', function() {
       assert.isTrue(!!~lightCSS.indexOf(
         'test-extensible-child { display: block; background-color: pink; }'));
     });
-
   });
 
   suite('rtl', function() {
