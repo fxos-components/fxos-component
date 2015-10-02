@@ -253,7 +253,7 @@ suite('gaia-component', function() {
 
     test('component can listen for rtl changes', function(done) {
       var El = component.register('rtl-test', {
-        rtl: true,
+        dirObserver: true,
 
         created: function() {
           document.addEventListener('dirchanged', function() {
