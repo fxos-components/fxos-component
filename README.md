@@ -23,8 +23,19 @@ var MyComponent = component.register('my-component', {
   },
 
   attributeChanged: function() {},
-  attached: function() {},
+  attached: function() {
+
+    // Localizes shadow DOM of your
+    // component and adds an observer for
+    // when localization changes
+    this.setupShadowL10n();
+  },
   detached: function() {},
+
+  // You can override this function and
+  // specify how the shadow DOM of your
+  // component should be localized.
+  localizeShadow: function(shadowRoot) {},
 
   template: `
     <button>I live in shadow-dom</button>
@@ -88,25 +99,27 @@ var MyComponent = component.register('my-component', {
 });
 ```
 
-Extensible components come with a little bit of overhead. For instance, 
+Extensible components come with a little bit of overhead. For instance,
 they store a copy of the template string that derived components
-will use to properly inherit the styles. With the extensible flag set to false 
-components won't store the template string and some memory will be saved. 
-This is an optimization for production systems and large component hierarchies. 
+will use to properly inherit the styles. With the extensible flag set to false
+components won't store the template string and some memory will be saved.
+This is an optimization for production systems and large component hierarchies.
 Registed components are extensible by default.
 
 ## Tests
+
+If you would like to run both unit and lint tests:
 
 1. Ensure Firefox Nightly is installed on your machine.
 2. `$ npm install`
 3. `$ npm test`
 
-If your would like tests to run on file change use:
+If your would like unit tests to run on file change use:
 
-`$ npm run test-dev`
+`$ npm run test-unit-dev`
 
 ## Lint check
 
 Run lint check with command:
 
-`$ npm run lint`
+`$ npm run test-lint`

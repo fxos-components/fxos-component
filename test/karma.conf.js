@@ -18,7 +18,7 @@ module.exports = function(config) {
 
     files: [
       'gaia-component.js',
-      'test/test.js'
+      'test/test-unit.js'
     ]
   });
 };
