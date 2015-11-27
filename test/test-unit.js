@@ -1,6 +1,6 @@
-/*global sinon, assert, suite, setup, teardown, test */
+/*global sinon, assert, suite, setup, teardown, test, HTMLTemplateElement,
+  suiteSetup */
 suite('gaia-component', function() {
-  'use strict';
 
   var component = window['gaia-component'];
 
@@ -256,13 +256,13 @@ suite('gaia-component', function() {
         dirObserver: true,
 
         created: function() {
-          document.addEventListener('dirchanged', function() {
-            this.dirChanged();
-          }.bind(this));
+          this.dirChanged = this.dirChanged.bind(this);
+          document.addEventListener('dirchanged', this.dirChanged);
         },
 
         dirChanged: function() {
           assert.equal(document.dir, 'rtl');
+          document.removeEventListener('dirchanged', this.dirChanged);
           done();
         }
       });
@@ -270,6 +270,69 @@ suite('gaia-component', function() {
       El();
       document.dir = 'rtl';
     });
+  });
+
+  suite('l10n', function() {
+    var MockL10n = {
+      translateFragment: sinon.spy(),
+      ready: Promise.resolve()
+    };
+    var Element = component.register('component-l10n', {
+      attached: function() { this.setupShadowL10n(); }
+    });
+    var dom, el, addEventListenerSpy, removeEventListenerSpy;
+
+    suiteSetup(function() {
+      addEventListenerSpy = sinon.spy(document, 'addEventListener');
+      removeEventListenerSpy = sinon.spy(document, 'removeEventListener');
+    });
+
+    setup(function() {
+      document.l10n = MockL10n;
+      dom = document.createElement('div');
+      document.body.appendChild(dom);
+      el = new Element();
+    });
+
+    teardown(function() {
+      addEventListenerSpy.reset();
+      removeEventListenerSpy.reset();
+      document.body.removeChild(dom);
+      dom = null;
+    });
+
+    test('localization should be supported if document.l10n is present',
+      function(done) {
+        assert.ok(document.l10n);
+        assert.notOk(el.onDOMRetranslated);
+        dom.appendChild(el);
+
+        assert.ok(el.onDOMRetranslated);
+        document.l10n.ready.then(function() {
+          sinon.assert.calledWith(document.addEventListener, 'DOMRetranslated',
+            el.onDOMRetranslated);
+          sinon.assert.calledWith(MockL10n.translateFragment, el.shadowRoot);
+          el.remove();
+          document.l10n.ready.then(function() {
+            sinon.assert.calledWith(document.removeEventListener,
+              'DOMRetranslated', el.onDOMRetranslated);
+            done();
+          });
+        });
+      });
+
+    test('localization should be skipped if document.l10n is not present',
+      function() {
+        // Clear l10n.
+        document.l10n = null;
+        sinon.spy(el, 'localizeShadow');
+
+        assert.notOk(el.onDOMRetranslated);
+        dom.appendChild(el);
+
+        sinon.assert.calledWith(el.localizeShadow, el.shadowRoot);
+        assert.notOk(el.onDOMRetranslated);
+      });
   });
 
   /**

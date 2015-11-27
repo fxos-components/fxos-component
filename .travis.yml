@@ -19,6 +19,6 @@ env:
   global:
     - TEST_SUITE=unit
   matrix:
-    - CI_ACTION="npm run lint"
-    - CI_ACTION="npm test"
+    - CI_ACTION="npm run test-lint"
+    - CI_ACTION="npm run test-unit"
 

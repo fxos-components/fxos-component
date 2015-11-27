@@ -1,6 +1,5 @@
 {
   "camelcase": false,
-  "curly": true,
   "forin": false,
   "latedef": "nofunc",
   "newcap": false,
@@ -10,24 +9,32 @@
   "quotmark": "single",
   "undef": true,
   "unused": "vars",
-  "strict": true,
   "trailing": true,
   "maxlen": 80,
+  "laxbreak": true,
 
   "eqnull": true,
-  "esnext": true,
   "expr": true,
-  "globalstrict": true,
 
   "maxerr": 1000,
   "regexdash": true,
   "laxcomma": true,
   "proto": true,
+  "boss": true,
+
+  "esnext": true,
 
   "browser": true,
   "devel": true,
   "nonstandard": true,
   "worker": true,
 
-  "-W078": true
+  "-W078": true,
+
+  "predef": [
+    "define",
+    "caches",
+    "Request",
+    "Response"
+  ]
 }
