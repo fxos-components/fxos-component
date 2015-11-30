@@ -8,8 +8,6 @@
     "test": "test"
   },
   "devDependencies": {
-    "bower": "^1.4.1",
-    "browserify": "^10.1.0",
     "jshint": "^2.7.0",
     "karma": "^0.12.32",
     "karma-firefox-launcher": "^0.1.4",
@@ -18,7 +16,6 @@
     "mozilla-download": "^1.0.5"
   },
   "scripts": {
-    "install": "bower install",
     "test-lint": "./node_modules/jshint/bin/jshint gaia-component.js test/*.js",
     "test-unit": "./node_modules/karma/bin/karma start test/karma.conf.js --single-run",
     "test-unit-dev": "./node_modules/karma/bin/karma start test/karma.conf.js",
