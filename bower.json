@@ -1,10 +1,9 @@
 {
   "name": "gaia-component",
-  "authors": [
-    "Wilson Page <wilsonpage@me.com>"
-  ],
+  "homepage": "https://github.com/fxos-components/gaia-component",
   "main": "gaia-component.js",
   "license": "MIT",
+
   "ignore": [
     "**/.*",
     "README.md",
@@ -13,5 +12,9 @@
     "bower_components",
     "test",
     "tests"
+  ],
+
+  "authors": [
+    "Wilson Page <wilsonpage@me.com>"
   ]
 }

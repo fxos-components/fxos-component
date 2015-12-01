@@ -1,6 +1,6 @@
 {
   "name": "gaia-component",
-  "homepage": "https://github.com/gaia-components/gaia-component",
+  "homepage": "https://github.com/fxos-components/gaia-component",
   "version": "0.5.1",
   "main": "gaia-component.js",
   "directories": {
@@ -23,9 +23,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/gaia-components/gaia-component.git"
+    "url": "git://github.com/fxos-components/gaia-component.git"
   },
   "bugs": {
-    "url": "https://github.com/gaia-components/gaia-component/issues"
+    "url": "https://github.com/fxos-components/gaia-component/issues"
   }
 }
