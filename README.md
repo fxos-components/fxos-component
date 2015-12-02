@@ -1,17 +1,17 @@
-# gaia-component [![](https://travis-ci.org/gaia-components/gaia-component.svg)](https://travis-ci.org/gaia-components/gaia-component) [![devDependency Status](https://david-dm.org/gaia-components/gaia-component/dev-status.svg)](https://david-dm.org/gaia-components/gaia-component#info=devDependencies)
+# fxos-component [![](https://travis-ci.org/fxos-components/fxos-component.svg)](https://travis-ci.org/fxos-components/fxos-component)
 
 A wrapper around `document.registerElement()` to define a custom-element with workarounds for gaps in the Gecko platform, plus some convenience methods.
 
 ## Installation
 
 ```bash
-$ bower install gaia-components/gaia-component
+$ npm install fxos-component
 ```
 
 ## Usage
 
 ```js
-var MyComponent = component.register('my-component', {
+var MyComponent = fxosComponent.register('my-component', {
   // extend component from the given prototype
   extends: HTMLButtonElement.prototype,
 
@@ -74,13 +74,13 @@ myComponent.customAttr; //=> 'foo';
 Components can extend other components:
 
 ```js
-var MyComponent = component.register('my-component', {
+var MyComponent = fxosComponent.register('my-component', {
   // extend component from the given prototype
   extends: HTMLButtonElement.prototype,
   ...
 });
 
-var YourComponent = component.register('your-component', {
+var YourComponent = fxosComponent.register('your-component', {
   // extend component from the given prototype
   extends: MyComponent.prototype,
   ...
@@ -91,7 +91,7 @@ If the property ```extensible: false``` is set the registered component
 cannot be extended:
 
 ```js
-var MyComponent = component.register('my-component', {
+var MyComponent = fxosComponent.register('my-component', {
   // extend component from the given prototype
   extends: HTMLButtonElement.prototype,
   extensible: false,

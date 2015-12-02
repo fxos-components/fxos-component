@@ -1,11 +1,12 @@
 {
-  "name": "gaia-component",
-  "homepage": "https://github.com/fxos-components/gaia-component",
+  "name": "fxos-component",
+  "homepage": "https://github.com/fxos-components/fxos-component",
   "version": "0.6.0",
-  "main": "gaia-component.js",
+  "main": "src/fxos-component.js",
   "directories": {
     "example": "examples",
-    "test": "test"
+    "test": "test",
+    "src": "src"
   },
   "devDependencies": {
     "jshint": "^2.7.0",
@@ -13,19 +14,22 @@
     "karma-firefox-launcher": "^0.1.4",
     "karma-mocha": "^0.1.10",
     "karma-sinon-chai": "^0.3.0",
-    "mozilla-download": "^1.0.5"
+    "mozilla-download": "^1.0.5",
+    "sinon": "^1.17.2"
   },
   "scripts": {
-    "test-lint": "./node_modules/jshint/bin/jshint gaia-component.js test/*.js",
+    "test-lint": "jshint src/*.js",
     "test-unit": "./node_modules/karma/bin/karma start test/karma.conf.js --single-run",
     "test-unit-dev": "./node_modules/karma/bin/karma start test/karma.conf.js",
-    "test": "npm run test-lint && npm run test-unit"
+    "test": "npm run test-lint && npm run test-unit",
+    "build": "webpack",
+    "watch": "webpack --watch"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/fxos-components/gaia-component.git"
+    "url": "git://github.com/fxos-components/fxos-component.git"
   },
   "bugs": {
-    "url": "https://github.com/fxos-components/gaia-component/issues"
+    "url": "https://github.com/fxos-components/fxos-component/issues"
   }
 }
