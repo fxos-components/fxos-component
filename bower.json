@@ -1,7 +1,7 @@
 {
-  "name": "gaia-component",
-  "homepage": "https://github.com/fxos-components/gaia-component",
-  "main": "gaia-component.js",
+  "name": "fxos-component",
+  "homepage": "https://github.com/fxos-components/fxos-component",
+  "main": "fxos-component.js",
   "license": "MIT",
 
   "ignore": [

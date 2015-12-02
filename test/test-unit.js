@@ -1,8 +1,8 @@
 /*global sinon, assert, suite, setup, teardown, test, HTMLTemplateElement,
   suiteSetup */
-suite('gaia-component', function() {
+suite('fxos-component', function() {
 
-  var component = window['gaia-component'];
+  var component = window.fxosComponent;
 
   setup(function() {
     this.sinon = sinon.sandbox.create();
@@ -194,7 +194,7 @@ suite('gaia-component', function() {
       assert.isDefined(El.prototype.createdCallback);
     });
 
-    test('it can extend from existing GaiaComponent', function() {
+    test('it can extend from existing FXOSComponent', function() {
       var Parent = component.register('test-extends-parent', { foo: true });
       var Child = component.register('test-extends-child', { extends: Parent });
 

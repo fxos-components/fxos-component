@@ -1,23 +1,28 @@
 'use strict';
 module.exports = function(config) {
   config.set({
-    frameworks: ['mocha', 'sinon-chai'],
+    basePath: '..',
     browsers: ['firefox_latest'],
+
+    frameworks: [
+      'mocha',
+      'sinon-chai'
+    ],
+
     client: {
       captureConsole: true,
       mocha: { 'ui': 'tdd' }
     },
-    basePath: '../',
 
     customLaunchers: {
       firefox_latest: {
         base: 'FirefoxNightly',
-        prefs: {'dom.webcomponents.enabled': true}
+        prefs: { 'dom.webcomponents.enabled': true }
       }
     },
 
     files: [
-      'gaia-component.js',
+      'fxos-component.js',
       'test/test-unit.js'
     ]
   });
