@@ -9,6 +9,7 @@
     "README.md",
     "package.json",
     "node_modules",
+    "webpack.config.js",
     "bower_components",
     "test",
     "tests"
