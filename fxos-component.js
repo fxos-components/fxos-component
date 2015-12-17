@@ -1,14 +1,5 @@
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
-		define([], factory);
-	else if(typeof exports === 'object')
-		exports["fxosComponent"] = factory();
-	else
-		root["fxosComponent"] = factory();
-})(this, function() {
-return /******/ (function(modules) { // webpackBootstrap
+var fxosComponent =
+/******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 
@@ -342,8 +333,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var regex = {
 	  shadowCss: /(?:\:host|\:\:content)[^{]*\{[^}]*\}/g,
 	  ':host': /(?:\:host)/g,
-	  ':host()': /\:host\((.+)\)(?: \:\:content)?/g,
-	  ':host-context': /\:host-context\((.+)\)([^{,]+)?/g,
+	  ':host()': /\:host\((.+?)\)(?: \:\:content)?/g,
+	  ':host-context': /\:host-context\((.+?)\)([^{,]+)?/g,
 	  '::content': /(?:\:\:content)/g
 	};
 
@@ -525,6 +516,4 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }
-/******/ ])
-});
-;
+/******/ ]);

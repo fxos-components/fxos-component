@@ -21,7 +21,7 @@
   "scripts": {
     "test-lint": "jshint src/*.js",
     "test-unit": "./node_modules/karma/bin/karma start test/karma.conf.js --single-run",
-    "test-unit-dev": "./node_modules/karma/bin/karma start test/karma.conf.js",
+    "test-unit-dev": "npm run -s watch & ./node_modules/karma/bin/karma start test/karma.conf.js",
     "test": "npm run test-lint && npm run test-unit",
     "build": "webpack",
     "watch": "webpack --watch"

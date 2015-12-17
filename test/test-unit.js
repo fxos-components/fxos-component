@@ -53,6 +53,7 @@ suite('fxos-component', function() {
       template: `<style>
           :host { display: block; }
           :host([foo]) { color: red; }
+          :host([foo]) :-moz-dir(rtl) { color: red; }
           :host([foo]) ::content .bar { color: red; }
           ::content h1 { color: red; }
         </style>
@@ -62,11 +63,11 @@ suite('fxos-component', function() {
     var el = new Element();
     var lightCSS = el.querySelector('style').innerHTML;
 
-    assert.isTrue(!!~lightCSS.indexOf('host-style-test { display: block; }'));
-    assert.isTrue(!!~lightCSS.indexOf('host-style-test[foo] { color: red; }'));
-    assert.isTrue(!!~lightCSS
-      .indexOf('host-style-test[foo] .bar { color: red; }'));
-    assert.isTrue(!!~lightCSS.indexOf('host-style-test h1 { color: red; }'));
+    assert.include(lightCSS, 'host-style-test { display: block; }');
+    assert.include(lightCSS, 'host-style-test[foo] { color: red; }');
+    assert.include(lightCSS, 'host-style-test[foo] :-moz-dir(rtl) { color: red; }');
+    assert.include(lightCSS, 'host-style-test[foo] .bar { color: red; }');
+    assert.include(lightCSS, 'host-style-test h1 { color: red; }');
   });
 
   test('It extracts :host-context() selectors into globalCss and rewrites them',
@@ -76,10 +77,10 @@ suite('fxos-component', function() {
       template: `<style>
           :host-context(.foo) ::content h1 { display: block; }
           :host-context([dir=rtl]) { dir: rtl; }
+          :host-context([foo]) h1:-moz-dir(rtl) { color: red; }
           :host(.foo) { color: red; }
           ::content h1 { color: red; }
-        </style>
-      `
+        </style>`
     });
 
     var el = new Element();
@@ -89,7 +90,8 @@ suite('fxos-component', function() {
 
       assert.equal(globalStyle.innerHTML,
         '.foo host-context-test h1 { display: block; }' +
-        '[dir=rtl] host-context-test { dir: rtl; }');
+        '[dir=rtl] host-context-test { dir: rtl; }' +
+        '[foo] host-context-test h1:-moz-dir(rtl) { color: red; }');
       assert.equal(lightCSS,
         'host-context-test.foo { color: red; }' +
         'host-context-test h1 { color: red; }');
