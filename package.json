@@ -14,9 +14,11 @@
     "karma": "^0.12.32",
     "karma-firefox-launcher": "^0.1.4",
     "karma-mocha": "^0.1.10",
+    "mocha": "2.3.4",
     "karma-sinon-chai": "^0.3.0",
     "mozilla-download": "^1.0.5",
-    "sinon": "^1.17.2"
+    "sinon": "^1.17.2",
+    "webpack": "^1.12.9"
   },
   "scripts": {
     "test-lint": "jshint src/*.js",
