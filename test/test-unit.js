@@ -1,5 +1,4 @@
-/*global sinon, assert, suite, setup, teardown, test, HTMLTemplateElement,
-  suiteSetup */
+/*global sinon, assert, suite, setup, teardown, test, HTMLTemplateElement */
 suite('fxos-component', function() {
 
   var component = window.fxosComponent;
@@ -65,7 +64,8 @@ suite('fxos-component', function() {
 
     assert.include(lightCSS, 'host-style-test { display: block; }');
     assert.include(lightCSS, 'host-style-test[foo] { color: red; }');
-    assert.include(lightCSS, 'host-style-test[foo] :-moz-dir(rtl) { color: red; }');
+    assert.include(lightCSS,
+      'host-style-test[foo] :-moz-dir(rtl) { color: red; }');
     assert.include(lightCSS, 'host-style-test[foo] .bar { color: red; }');
     assert.include(lightCSS, 'host-style-test h1 { color: red; }');
   });
@@ -276,18 +276,13 @@ suite('fxos-component', function() {
 
   suite('l10n', function() {
     var MockL10n = {
-      translateFragment: sinon.spy(),
-      ready: Promise.resolve()
+      observeRoot: sinon.spy(),
+      disconnectRoot: sinon.spy()
     };
     var Element = component.register('component-l10n', {
       attached: function() { this.setupShadowL10n(); }
     });
-    var dom, el, addEventListenerSpy, removeEventListenerSpy;
-
-    suiteSetup(function() {
-      addEventListenerSpy = sinon.spy(document, 'addEventListener');
-      removeEventListenerSpy = sinon.spy(document, 'removeEventListener');
-    });
+    var dom, el;
 
     setup(function() {
       document.l10n = MockL10n;
@@ -297,43 +292,23 @@ suite('fxos-component', function() {
     });
 
     teardown(function() {
-      addEventListenerSpy.reset();
-      removeEventListenerSpy.reset();
+      document.l10n = null;
       document.body.removeChild(dom);
       dom = null;
     });
 
     test('localization should be supported if document.l10n is present',
-      function(done) {
-        assert.ok(document.l10n);
-        assert.notOk(el.onDOMRetranslated);
-        dom.appendChild(el);
-
-        assert.ok(el.onDOMRetranslated);
-        document.l10n.ready.then(function() {
-          sinon.assert.calledWith(document.addEventListener, 'DOMRetranslated',
-            el.onDOMRetranslated);
-          sinon.assert.calledWith(MockL10n.translateFragment, el.shadowRoot);
-          el.remove();
-          document.l10n.ready.then(function() {
-            sinon.assert.calledWith(document.removeEventListener,
-              'DOMRetranslated', el.onDOMRetranslated);
-            done();
-          });
-        });
-      });
-
-    test('localization should be skipped if document.l10n is not present',
       function() {
-        // Clear l10n.
-        document.l10n = null;
-        sinon.spy(el, 'localizeShadow');
+        assert.ok(document.l10n);
+        sinon.assert.notCalled(document.l10n.observeRoot);
+        sinon.assert.notCalled(document.l10n.disconnectRoot);
 
-        assert.notOk(el.onDOMRetranslated);
         dom.appendChild(el);
+        sinon.assert.calledWith(document.l10n.observeRoot, el.shadowRoot);
+        sinon.assert.notCalled(document.l10n.disconnectRoot);
 
-        sinon.assert.calledWith(el.localizeShadow, el.shadowRoot);
-        assert.notOk(el.onDOMRetranslated);
+        el.remove();
+        sinon.assert.calledWith(document.l10n.disconnectRoot, el.shadowRoot);
       });
   });
 

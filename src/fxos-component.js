@@ -63,9 +63,8 @@ var base = {
         document.removeEventListener('dirchanged', this.setInnerDirAttributes);
       }
 
-      if (document.l10n && this.onDOMRetranslated) {
-        document.l10n.ready.then(() => document.removeEventListener(
-          'DOMRetranslated', this.onDOMRetranslated));
+      if (document.l10n) {
+        document.l10n.disconnectRoot(this.shadowRoot);
       }
 
       this.detached();
@@ -90,22 +89,8 @@ var base = {
      * l10n for component's shadow DOM.
      */
     setupShadowL10n() {
-      if (!document.l10n) return this.localizeShadow(this.shadowRoot);
-      this.onDOMRetranslated = this.localizeShadow.bind(null, this.shadowRoot);
-      document.l10n.ready.then(() => {
-        document.addEventListener('DOMRetranslated', this.onDOMRetranslated);
-        this.localizeShadow(this.shadowRoot);
-      });
-    },
-
-    /**
-     * Localizes the shadowRoot subtree.
-     *
-     * @param {ShadowRoot}
-     */
-    localizeShadow(shadowRoot) {
-      if (!document.l10n) return;
-      document.l10n.translateFragment(shadowRoot);
+      if (!document.l10n) { return; }
+      document.l10n.observeRoot(this.shadowRoot);
     },
 
     /**
